@@ -4,6 +4,7 @@
     "name": "bind-accordion",
     "dependencies": [
         "/main.js",
+        "/jquery.cookie.min.js",
         "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
     ],
     "operations": [
