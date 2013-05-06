@@ -1,51 +1,78 @@
+var COOKIE_NAME = "dev_lists";
 module.exports = function (config) {
 
     config = processConfig(config);
+    var dev_lists = "";
 
-    // TODO Clean the code
+    // Temporar setTimeout
+    // TODO Remove it!
 
-    // TODO Set initial state on page load
-    // using cookies?
+    $(window).on("hashchange", function() {
+        setTimeout(function() {
+            initFromCookies();
+        }, 100);
+    });
 
-    // Click on list header
-    // $(config.listHeader).delegate("click", function() {
     setTimeout(function() {
+        initFromCookies();
+
+        // TODO on for dinamically elements. delegate? bind? live is deprecated.
         $(config.listHeader).on("click", function() {
             var clickedList = $(this);
 
             switch (config.list.type) {
                 
-                // Is a jQuery function
+                ///////////////////
+                // jQuery function
+                ///////////////////
                 case "jQueryFunction":
                     var icons = config.icons;
                     var list = clickedList[config.list.value]();
 
+                    var listItemCookie = {
+                        "id": list.attr("id"), // Supposing that every list has an id
+                        // "listHeader": JSON.stringify(list),
+                        // TODO Solve error: "Converting circular structure to JSON."
+                        "visible": ""
+                    };
+
                     // The list is hidden
                     if (list.css("display") == "none"){
                         
+                        listItemCookie.visible = true;
+
                         switch (config.icons.type) {
                             case "class":
                                 clickedList.find(icons.container).removeClass(icons.hidden);
                                 clickedList.find(icons.container).addClass(icons.visible);
-                            
-                            break;
-                            // TODO Check for errors
+                                break;
+
+                            default: showError("This type of icons isn't yet implemented: " + config.icons.type);
                         }
 
                     // The list is visible
                     } else {
+                        
+                        listItemCookie.visible = false;
+
                         switch (config.icons.type) {
                             case "class":
                                 clickedList.find(icons.container).addClass(icons.hidden);
                                 clickedList.find(icons.container).removeClass(icons.visible);
-                            
-                            break;
-                            // TODO Check for errors
+                                break;
+
+                            default: showError("This type of icons isn't yet implemented: " + config.icons.type);
                         }
                     }
-                    list.toggle(function() {
-                        
-                    });
+
+                    dev_lists += "," + JSON.stringify(listItemCookie);
+                    $.cookie(COOKIE_NAME, dev_lists);
+
+                    list.toggle();
+
+                    break;
+                default:
+                    showError("This type of list isn't yet implemented: " + config.list.type);
                     break;
             }
         });
@@ -54,23 +81,59 @@ module.exports = function (config) {
 
 /*
     "config": {
-        "listHeader": ".projectFolder",
+        "listHeader":    ... (string)
         "list": {
-            "type": "jQueryFunction",
-            "value": "next"
+            "type":      "jQueryFunction" or "selector",
+            "value":     ... (jQuery function or a jQuery selector)
         },
         "icons": {
-            "type": "class"
-            "visible": "icon-chevron-down"
-            "hidden": "icon-chevron-right"
-            "container": ".icon"
+            "type":      "class" or "img"
+            "visible":   "class/path_to_img"
+            "hidden":    "class/path_to_img"
+            "container": ... (jQuery selector)
         }
     }
 */
 
 function processConfig(config) {
 
-    // TODO Build function
+    config.list = config.list || {};
+    config.icons = config.icons || {};
     
     return config;
+}
+
+function initFromCookies() {
+
+    // TODO Cookies from module config
+    dev_lists = $.cookie(COOKIE_NAME) || "";
+    var lists = dev_lists.substring(2, dev_lists.length - 1) || "";
+    lists = lists.split("},{") || [];
+
+    for (var i = 0; i <  lists.length; i++) {
+        lists[i] = "{" + lists[i] + "}";
+        lists[i] = JSON.parse(lists[i]);
+    }
+
+    for (var i in lists) {
+        
+        var list = lists[i];
+        
+        if (list.visible) {
+            $("#" + list.id).show();
+            // TODO Solve error: "Converting circular structure to JSON."
+            // list.listHeader.find(icons.container).removeClass(icons.hidden);
+            // list.listHeader.find(icons.container).addClass(icons.visible);
+        }
+        else {
+            $("#" + list.id).hide();
+            // TODO Solve error: "Converting circular structure to JSON."
+            // list.listHeader.find(icons.container).addClass(icons.hidden);
+            // list.listHeader.find(icons.container).removeClass(icons.visible);
+        }
+    }
+}
+
+function showError(message) {
+    alert(message);
 }
