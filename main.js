@@ -13,70 +13,68 @@ module.exports = function (config) {
         }, 100);
     });
 
-    setTimeout(function() {
-        initFromCookies();
+    initFromCookies();
 
-        // TODO on for dinamically elements. delegate? bind? live is deprecated.
-        $(config.listHeader).on("click", function() {
-            var clickedList = $(this);
+    // TODO on for dinamically elements. delegate? bind? live is deprecated.
+    $(document).on("click", config.listHeader, function() {
+        var clickedList = $(this);
 
-            switch (config.list.type) {
-                
-                ///////////////////
-                // jQuery function
-                ///////////////////
-                case "jQueryFunction":
-                    var icons = config.icons;
-                    var list = clickedList[config.list.value]();
+        switch (config.list.type) {
+            
+            ///////////////////
+            // jQuery function
+            ///////////////////
+            case "jQueryFunction":
+                var icons = config.icons;
+                var list = clickedList[config.list.value]();
 
-                    var listItemCookie = {
-                        "id": list.attr("id"), // Supposing that every list has an id
-                        // "listHeader": JSON.stringify(list),
-                        // TODO Solve error: "Converting circular structure to JSON."
-                        "visible": ""
-                    };
+                var listItemCookie = {
+                    "id": list.attr("id"), // Supposing that every list has an id
+                    // "listHeader": JSON.stringify(list),
+                    // TODO Solve error: "Converting circular structure to JSON."
+                    "visible": ""
+                };
 
-                    // The list is hidden
-                    if (list.css("display") == "none"){
-                        
-                        listItemCookie.visible = true;
+                // The list is hidden
+                if (list.css("display") == "none"){
+                    
+                    listItemCookie.visible = true;
 
-                        switch (config.icons.type) {
-                            case "class":
-                                clickedList.find(icons.container).removeClass(icons.hidden);
-                                clickedList.find(icons.container).addClass(icons.visible);
-                                break;
+                    switch (config.icons.type) {
+                        case "class":
+                            clickedList.find(icons.container).removeClass(icons.hidden);
+                            clickedList.find(icons.container).addClass(icons.visible);
+                            break;
 
-                            default: showError("This type of icons isn't yet implemented: " + config.icons.type);
-                        }
-
-                    // The list is visible
-                    } else {
-                        
-                        listItemCookie.visible = false;
-
-                        switch (config.icons.type) {
-                            case "class":
-                                clickedList.find(icons.container).addClass(icons.hidden);
-                                clickedList.find(icons.container).removeClass(icons.visible);
-                                break;
-
-                            default: showError("This type of icons isn't yet implemented: " + config.icons.type);
-                        }
+                        default: showError("This type of icons isn't yet implemented: " + config.icons.type);
                     }
 
-                    dev_lists += "," + JSON.stringify(listItemCookie);
-                    $.cookie(COOKIE_NAME, dev_lists);
+                // The list is visible
+                } else {
+                    
+                    listItemCookie.visible = false;
 
-                    list.toggle();
+                    switch (config.icons.type) {
+                        case "class":
+                            clickedList.find(icons.container).addClass(icons.hidden);
+                            clickedList.find(icons.container).removeClass(icons.visible);
+                            break;
 
-                    break;
-                default:
-                    showError("This type of list isn't yet implemented: " + config.list.type);
-                    break;
-            }
-        });
-    }, 2000);
+                        default: showError("This type of icons isn't yet implemented: " + config.icons.type);
+                    }
+                }
+
+                dev_lists += "," + JSON.stringify(listItemCookie);
+                $.cookie(COOKIE_NAME, dev_lists);
+
+                list.toggle();
+
+                break;
+            default:
+                showError("This type of list isn't yet implemented: " + config.list.type);
+                break;
+        }
+    });
 }
 
 /*
