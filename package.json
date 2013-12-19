@@ -1,0 +1,24 @@
+{
+  "name": "bind-accordion",
+  "version": "0.0.0",
+  "description": "Bind accordion Mono Module",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/IonicaBizau/bind-accordion.git"
+  },
+  "mono": {
+    "dependencies": [
+        "/main.js",
+        "/jquery.cookie.min.js",
+        "http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"
+    ],
+    "operations": [
+    ]
+  },
+  "author": "Ionică Bizău",
+  "bugs": {
+    "url": "https://github.com/IonicaBizau/bind-accordion/issues"
+  },
+  "homepage": "https://github.com/IonicaBizau/bind-accordion"
+}
